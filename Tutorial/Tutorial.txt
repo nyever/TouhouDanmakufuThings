@@ -1,18 +1,37 @@
-＃TouhouDanmakufu[Single]
+#TouhouDanmakufu[Single]
 #ScriptVersion[3]
 #Title["Tutorial 01"]
 #Text["Simple enemy + bullet tutorial"]
 
-Let bossObj;
+let bossObj;
 let bossX = 0;
 let bossY = 0;
 let imgBoss = GetCurrentScriptDirectory ~ "angysquare.png" ;
 
 @Initialize {
-
+	// define a boss in bossObj and register it
+	bossObj = ObjEnemy_Create(OBJ_ENEMY_BOSS);
+	ObjEnemy_Regist(bossObj);
+	
+	// texture the boss, set the centre as true centre.
+	ObjPrim_SetTexture(bossObj, imgBoss);
+	ObjSprite2D_SetSourceRect(bossObj, 0, 0, 32, 32);
+	ObjSprite2D_SetDestCenter(bossObj); 
+	
+	// move boss to desired x y location at desired speed
+	ObjMove_SetDestAtSpeed(bossObj, 192, 120, 5);
 }
 
+
 @Event {
+	// setting the boss timer and life
+	alternative(GetEventType())
+	case(EV_REQUEST_LIFE) {
+		SetScriptResult(1500);
+	}
+	case(EV_REQUEST_TIMER) {
+		SetScriptResult(60);
+	}
 
 }
 
