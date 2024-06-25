@@ -6,7 +6,7 @@
 let bossObj;
 let bossX = 0;
 let bossY = 0;
-let imgBoss = GetCurrentScriptDirectory ~ "angysquare.png" ;
+let imgBoss = GetCurrentScriptDirectory ~ "Jess.png" ;
 
 @Initialize {
 	// define a boss in bossObj and register it
@@ -15,7 +15,7 @@ let imgBoss = GetCurrentScriptDirectory ~ "angysquare.png" ;
 	
 	// texture the boss, set the centre as true centre.
 	ObjPrim_SetTexture(bossObj, imgBoss);
-	ObjSprite2D_SetSourceRect(bossObj, 0, 0, 32, 32);
+	ObjSprite2D_SetSourceRect(bossObj, 0, 0, 70, 100);
 	ObjSprite2D_SetDestCenter(bossObj); 
 	
 	// move boss to desired x y location at desired speed
