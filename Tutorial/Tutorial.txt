@@ -1,7 +1,11 @@
+// Defines location and text in menu
 #TouhouDanmakufu[Single]
 #ScriptVersion[3]
 #Title["Tutorial 01"]
 #Text["Simple enemy + bullet tutorial"]
+
+//including area
+#include "script/default_system/Deafaut_ShotConst.txt" //includes the bullet directory
 
 let bossObj;
 let bossX = 0;
@@ -12,14 +16,11 @@ let imgBoss = GetCurrentScriptDirectory ~ "Jess.png" ;
 	// define a boss in bossObj and register it
 	bossObj = ObjEnemy_Create(OBJ_ENEMY_BOSS);
 	ObjEnemy_Regist(bossObj);
-	
-	// texture the boss, set the centre as true centre.
-	ObjPrim_SetTexture(bossObj, imgBoss);
-	ObjSprite2D_SetSourceRect(bossObj, 0, 0, 70, 100);
-	ObjSprite2D_SetDestCenter(bossObj); 
-	
+	//set pos
+	ObjMove_SetPosition(bossObj, 192, -100);
 	// move boss to desired x y location at desired speed
 	ObjMove_SetDestAtSpeed(bossObj, 192, 120, 5);
+	mainTask; //run mainTask
 }
 
 
@@ -36,9 +37,72 @@ let imgBoss = GetCurrentScriptDirectory ~ "Jess.png" ;
 }
 
 @MainLoop {
-
+  bossX = ObjMove_GetX(bossObj);
+  bossY = ObjMove_GetY(bossObj);
+  
+  //hurtbox and hitbox fro boss
+  ObjEnemy_SetIntersectionCircleToShot(bossObj, bossX, bossY, 24);
+  ObjEnemy_SetIntersectionCircleToPlayer(bossObj, bossX, bossY, 32);
+  
+	yield;
 }
 
 @Finalize{
 
+}
+task mainTask {
+  renderBoss;
+  movement;
+  
+}
+task renderBoss {
+  let dir;
+  let speed;
+  // texture the boss, set the centre as true centre.
+	ObjPrim_SetTexture(bossObj, imgBoss);
+	ObjSprite2D_SetSourceRect(bossObj, 0, 0, 70, 100);
+	ObjSprite2D_SetDestCenter(bossObj); 
+	ObjRender_SetScaleXYZ (bossObj, 0.7, 0.7, 0);
+	
+	while(!Obj_IsDeleted(bossObj)) {
+	  // update boss speed and direction
+	  ObjMove_GetAngle(bossObj);
+	  ObjMove_GetSpeed(bossObj);
+	  
+	  //idle animation
+	  if(speed == 0) {ObjSprite2D_SetSourceRect(bossObj, 0, 0, 70, 100); ObjRender_SetAngleXYZ(bossObj, 0, 0, 0);}
+	 //move animation
+	  else if(cos(dir) < 0) {ObjSprite2D_SetSourceRect(bossObj, 0, 0, 70, 100); ObjRender_SetAngleXYZ(bossObj, 0, 0, 0);} //left
+	  else if(cos(dir) > 0) {ObjSprite2D_SetSourceRect(bossObj, 0, 0, 70, 100); ObjRender_SetAngleXYZ(bossObj, 0, 180, 0);} //right
+	  yield;
+	}
+}
+
+task movement {
+  wait(60)
+  loop {
+    ObjMove_SetDestAtSpeed(bossObj, 100, 120, 5); //move left
+    wait(30);
+    fire;
+    wait(12)
+    ObjMove_SetDestAtSpeed(bossObj, 100, 120, 5); //move right
+    wait(5);
+    fire;
+    wait(4)
+  }
+} 
+function angleToPlayer {
+  let dir = atan(GetPlayerY - bossY, GetPlayerX - bossX);
+  return dir;
+}
+//CreateShotA1(x,y,speed,direction,bullet,delay)
+task fire {
+  let dir = angleToPlayer; //set direction vs constant change
+  loop (10){
+     CreateShotA1(bossX, bossY, 3, dir - 20,14, 0);
+     CreateShotA1(bossX, bossY, 3, dir,14, 0);
+     CreateShotA1(bossX, bossY, 3, dir + 20,14, 0);
+     wait(3);
+  }
+  
 }
