@@ -5,7 +5,7 @@
 #Text["Simple enemy + bullet tutorial"]
 
 //including area
-#include "script/default_system/Deafaut_ShotConst.txt" //includes the bullet directory
+#include "script/default_system/Default_ShotConst.txt" //includes the bullet directory
 
 let bossObj;
 let bossX = 0;
